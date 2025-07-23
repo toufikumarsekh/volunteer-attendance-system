@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register Volunteer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f2fe, #f0f9ff);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 550px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    h1 {
+      color: #1e3a8a;
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    video {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 14px 24px;
+      font-size: 16px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: #2563eb;
+      transform: scale(1.03);
+    }
+
+    #step2 {
+      margin-top: 30px;
+      background-color: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    #step2 h3 {
+      color: #1f2937;
+      margin-bottom: 15px;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      max-width: 400px;
+      text-align: center;
+      font-size: 18px;
+      color: #111827;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 16px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #111;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 25px 20px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .modal-content {
+        margin: 0 20px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Register Volunteer</h1>
+    <input type="text" id="volunteer_id" placeholder="Volunteer ID" required />
+    <input type="text" id="center_name" placeholder="Center Name" required />
+    <!-- Removed sub_center_name input -->
+    <input type="text" id="name" placeholder="Full Name" required />
+    <select id="shift" required>
+      <option value="">Select Shift</option>
+      <option value="morning">Morning</option>
+      <option value="evening">Evening</option>
+    </select>
+
+    <video autoplay playsinline></video>
+    <button onclick="captureAndSend()">📸 Upload Photo + GPS</button>
+
+    <div id="step2" style="display:none;">
+      <h3>Step 2: Fingerprint Authentication</h3>
+      <button onclick="registerFingerprint()">🧬 Register Fingerprint</button>
+    </div>
+  </div>
+
+  <!-- Photo modal -->
+  <div id="photoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('photoModal')">&times;</span>
+      <p>✅ Photo and GPS uploaded successfully! Proceed to fingerprint registration.</p>
+    </div>
+  </div>
+
+  <!-- Fingerprint modal -->
+  <div id="fingerprintModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('fingerprintModal')">&times;</span>
+      <p>🎉 Fingerprint registered successfully! Volunteer registration complete.</p>
+    </div>
+  </div>
+
+  <script>
+    let userId = null;
+
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          document.querySelector('video').srcObject = stream;
+        })
+        .catch(() => {
+          alert("Camera access denied or not available.");
+        });
+    }
+
+    async function captureAndSend() {
+      const volunteer_id = document.getElementById('volunteer_id').value;
+      const center_name = document.getElementById('center_name').value;
+      // Removed fetching sub_center_name from DOM
+      const name = document.getElementById('name').value;
+      const shift = document.getElementById('shift').value;
+
+      if (!volunteer_id || !center_name || !name || !shift) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      const video = document.querySelector('video');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const imageData = canvas.toDataURL('image/jpeg');
+
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const res = await fetch('/upload-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            volunteer_id, center_name, name, shift,
+            photo: imageData,
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude
+          })
+        });
+
+        const data = await res.json();
+        userId = data.user_id;
+        showModal('photoModal');
+        document.getElementById('step2').style.display = 'block';
+      }, () => {
+        alert("Unable to fetch GPS location.");
+      });
+    }
+
+    async function registerFingerprint() {
+      try {
+        const res = await fetch('/auth/begin-registration?user_id=' + userId);
+        const options = await res.json();
+        options.publicKey.challenge = Uint8Array.from(atob(options.publicKey.challenge), c => c.charCodeAt(0));
+        options.publicKey.user.id = Uint8Array.from(atob(options.publicKey.user.id), c => c.charCodeAt(0));
+
+        const credential = await navigator.credentials.create({ publicKey: options.publicKey });
+
+        const attestationObject = credential.response.attestationObject;
+        const rawId = credential.rawId;
+
+        const result = await fetch('/auth/finish-registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            credentialId: btoa(String.fromCharCode(...new Uint8Array(rawId))),
+            publicKey: btoa(String.fromCharCode(...new Uint8Array(attestationObject)))
+          })
+        });
+
+        const data = await result.json();
+        if (data.status === "success" || data.status === undefined) {
+          showModal('fingerprintModal');
+        } else {
+          alert(data.status);
+        }
+      } catch (err) {
+        console.error("Fingerprint registration failed:", err);
+        alert("❌ Fingerprint registration failed");
+      }
+    }
+
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.style.display = 'none';
+    }
+
+    window.onload = startCamera;
+  </script>
+</body>
+</html>

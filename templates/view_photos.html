@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Volunteer Photos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: linear-gradient(to right, #e0f7fa, #e3f2fd);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0d47a1;
+      margin-bottom: 40px;
+      font-size: 32px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+    }
+
+    img {
+      height: 120px;
+      width: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid #90caf9;
+    }
+
+    .no-photo {
+      height: 120px;
+      width: 120px;
+      background: #cfd8dc;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-size: 14px;
+      border: 2px dashed #90a4ae;
+    }
+
+    .info {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #263238;
+      flex: 1;
+    }
+
+    .info strong {
+      color: #0d47a1;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+      }
+
+      img, .no-photo {
+        height: 100px;
+        width: 100px;
+      }
+
+      .info {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Volunteer Photo Records</h1>
+
+  {% for user in users %}
+  <div class="card">
+    {% if user.photo %}
+      <img src="data:image/jpeg;base64,{{ user.photo }}" alt="Photo">
+    {% else %}
+      <div class="no-photo">No Photo</div>
+    {% endif %}
+    <div class="info">
+      <strong>Volunteer ID:</strong> {{ user.volunteer_id or "N/A" }}<br>
+      <strong>Center:</strong> {{ user.center_name or "N/A" }}<br>
+      <strong>Sub-center:</strong> {{ user.sub_center_name or "N/A" }}<br>
+      <strong>Name:</strong> {{ user.name or "N/A" }}<br>
+      <strong>Shift:</strong> {{ user.shift or "N/A" }}<br>
+      <strong>Latitude:</strong> {{ user.latitude or "N/A" }}<br>
+      <strong>Longitude:</strong> {{ user.longitude or "N/A" }}
+    </div>
+  </div>
+  {% endfor %}
+</body>
+</html>
