@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Volunteer Attendance System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dbeafe, #eff6ff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-3px);
+    }
+
+    h1 {
+      color: #1e3a8a;
+      margin-bottom: 30px;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav a {
+      display: block;
+      background-color: #3b82f6;
+      color: white;
+      text-decoration: none;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: 500;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .nav a:hover {
+      background-color: #2563eb;
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .nav a {
+        font-size: 16px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Volunteer Attendance System</h1>
+    <div class="nav">
+      <a href="{{ url_for('register') }}">📸 Register Volunteer</a>
+      <a href="{{ url_for('admin_panel') }}">🛠️ Admin Panel</a>
+    </div>
+  </div>
+</body>
+</html>
